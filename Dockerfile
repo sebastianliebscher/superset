@@ -54,12 +54,13 @@ ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     SUPERSET_ENV=production \
     FLASK_APP="superset.app:create_app()" \
-    PYTHONPATH="/app/pythonpath" \
     SUPERSET_HOME="/app/superset_home" \
     SUPERSET_PORT=8088
 
-RUN mkdir -p ${PYTHONPATH} \
-    && useradd --user-group -d ${SUPERSET_HOME} -m --no-log-init --shell /bin/bash superset \
+# copy docker-init.sh, docker-bootstrap.sh etc
+COPY --chown=superset:superset ./docker /app/docker
+
+RUN useradd --user-group -d ${SUPERSET_HOME} -m --no-log-init --shell /bin/bash superset \
     && apt-get update -q \
     && apt-get install -yq --no-install-recommends \
         build-essential \
