@@ -24,7 +24,7 @@ import logging
 import os
 
 from celery.schedules import crontab
-from flask_caching.backends.filesystemcache import FileSystemCache
+from flask_caching.backends.rediscache import RedisCache
 
 logger = logging.getLogger()
 
@@ -59,7 +59,13 @@ REDIS_PORT = os.getenv("REDIS_PORT", "6379")
 REDIS_CELERY_DB = os.getenv("REDIS_CELERY_DB", "0")
 REDIS_RESULTS_DB = os.getenv("REDIS_RESULTS_DB", "1")
 
-RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
+# https://flask-caching.readthedocs.io/en/latest/#built-in-cache-backends
+RESULTS_BACKEND = RedisCache(
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    key_prefix="superset_results_",
+    db=REDIS_RESULTS_DB,
+)
 
 CACHE_CONFIG = {
     "CACHE_TYPE": "RedisCache",
